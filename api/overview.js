@@ -59,7 +59,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error("Gemini API returned HTTP", response.status);
-      return res.status(502).json({ error: "The AI overview service had a wobble." });
+      return res.status(502).json({ error: "The AI overview service had a wobble.", upstreamStatus: response.status });
     }
     const payload = await response.json();
     const rawText = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim();

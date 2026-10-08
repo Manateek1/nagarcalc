@@ -76,6 +76,7 @@ test("turns upstream errors into a generic response without exposing credentials
     const res = mockResponse();
     await handler({ method: "POST", headers: { "x-forwarded-for": `error-${Date.now()}` }, body: { expression: "4*9" } }, res);
     assert.equal(res.statusCode, 502);
+    assert.equal(res.body.upstreamStatus, 400);
     assert.equal(JSON.stringify(res.body).includes("test-key"), false);
   } finally {
     globalThis.fetch = savedFetch;
