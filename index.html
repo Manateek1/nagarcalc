@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffde59" />
+    <meta name="description" content="NagarCalc: questionable math, premium nonsense, and a tiny AI explanation." />
+    <title>NagarCalc — math with zero chill</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div class="page-scribble scribble-one" aria-hidden="true">MATH???</div>
+    <div class="page-scribble scribble-two" aria-hidden="true">BIG BRAIN TIME</div>
+
+    <header class="topbar">
+      <a class="wordmark" href="#top" aria-label="NagarCalc home"><span class="brand-mark">N!</span> NAGARCALC</a>
+      <div class="topbar-right">
+        <span class="top-pill"><span class="pulse-dot"></span> CALCULATING (PROBABLY)</span>
+        <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects">
+          <span id="sound-icon" aria-hidden="true">🔊</span><span id="sound-label">SOUND ON</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="title">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="eyebrow-star">✳</span> THE WORLD'S MOST UNNECESSARY CALCULATOR</p>
+          <h1 id="title">Math, but make it <span class="marker-word">unhinged.</span></h1>
+          <p class="intro-text">For when your brain says “I got this” and your fingers say “absolutely not.”</p>
+        </div>
+        <div class="rating-sticker" aria-label="Certified by absolutely nobody">
+          <span>100%</span><small>QUESTIONABLE<br />MATH ENERGY</small>
+        </div>
+      </section>
+
+      <section class="calculator-wrap" aria-label="NagarCalc calculator">
+        <div class="tape tape-left" aria-hidden="true">NO THOUGHTS JUST MATH</div>
+        <div class="calc-card">
+          <div class="calc-card-top">
+            <span class="calc-label"><span class="tiny-star">✦</span> THE MATH ZONE</span>
+            <span class="calc-mode">VIBES MODE: ON</span>
+          </div>
+
+          <div class="display" aria-label="Calculator display">
+            <div id="history" class="history">READY FOR QUESTIONABLE MATH</div>
+            <output id="screen" class="screen" aria-live="polite" aria-atomic="true">0</output>
+          </div>
+
+          <div class="keypad" aria-label="Calculator buttons">
+            <button class="key key-soft" type="button" data-key="AC" aria-label="All clear">AC</button>
+            <button class="key key-soft" type="button" data-key="±" aria-label="Change sign">±</button>
+            <button class="key key-soft" type="button" data-key="%" aria-label="Percent">%</button>
+            <button class="key key-operator" type="button" data-key="/" aria-label="Divide">÷</button>
+
+            <button class="key" type="button" data-key="7">7</button>
+            <button class="key" type="button" data-key="8">8</button>
+            <button class="key" type="button" data-key="9">9</button>
+            <button class="key key-operator" type="button" data-key="*" aria-label="Multiply">×</button>
+
+            <button class="key" type="button" data-key="4">4</button>
+            <button class="key" type="button" data-key="5">5</button>
+            <button class="key" type="button" data-key="6">6</button>
+            <button class="key key-operator" type="button" data-key="-" aria-label="Subtract">−</button>
+
+            <button class="key" type="button" data-key="1">1</button>
+            <button class="key" type="button" data-key="2">2</button>
+            <button class="key" type="button" data-key="3">3</button>
+            <button class="key key-operator" type="button" data-key="+" aria-label="Add">+</button>
+
+            <button class="key key-zero" type="button" data-key="0">0</button>
+            <button class="key key-soft" type="button" data-key="." aria-label="Decimal point">.</button>
+            <button class="key key-soft" type="button" data-key="DEL" aria-label="Delete last character">⌫</button>
+
+            <button class="key key-soft key-paren" type="button" data-key="(" aria-label="Open parenthesis">(</button>
+            <button class="key key-soft key-paren" type="button" data-key=")" aria-label="Close parenthesis">)</button>
+
+            <button class="key key-equals" type="button" data-key="=" aria-label="Equals. Big sound!">
+              <span>MAKE IT SO</span><b>=</b><i aria-hidden="true">✹</i>
+            </button>
+          </div>
+
+          <div class="keyboard-hint"><span class="keycap">ENTER</span> = math magic <span class="hint-separator">·</span> <span class="keycap">ESC</span> = emotional reset</div>
+        </div>
+        <div class="tape tape-right" aria-hidden="true">CERTIFIED BY VIBES</div>
+        <div class="burst burst-top" aria-hidden="true">?!</div>
+        <div class="burst burst-bottom" aria-hidden="true">WOW</div>
+      </section>
+
+      <section class="overview-card" aria-labelledby="overview-title">
+        <div class="overview-heading">
+          <div class="overview-icon" aria-hidden="true">AI</div>
+          <div><p class="overview-kicker">THE ROBOT HAS OPINIONS</p><h2 id="overview-title">Tiny AI overview</h2></div>
+          <span class="line-limit">MAX 5 LINES</span>
+        </div>
+        <div id="overview-content" class="overview-content" aria-live="polite" aria-atomic="true">
+          <p>Hit the giant equals button. Get a tiny explanation. Try not to let it go to its head.</p>
+        </div>
+        <div id="overview-status" class="overview-status">Math is calculated right here. The AI just adds commentary.</div>
+      </section>
+
+      <p class="bottom-note"><span aria-hidden="true">✦</span> BUILT FOR CALCULATIONS AND QUESTIONABLE LIFE CHOICES <span aria-hidden="true">✦</span></p>
+    </main>
+
+    <footer class="footer">
+      <span>© NAGARCALC LABS · PROBABLY LEGIT</span>
+      <a href="https://github.com/Manateek1/nagarcalc" target="_blank" rel="noreferrer">PEEK AT THE GOBLINS <span aria-hidden="true">↗</span></a>
+    </footer>
+  </body>
+</html>
