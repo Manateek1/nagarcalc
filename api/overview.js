@@ -1,6 +1,6 @@
 import { calculate, formatNumber } from "../calculator.js";
 
-const MODEL = "gemini-3.8-flash";
+const MODELS = ["gemini-3.8-flash", "gemini-3.6-flash"];
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_WINDOW = 12;
 const requests = new Map();
@@ -38,33 +38,44 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(503).json({ error: "AI overview is not configured." });
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: "You are the playful, kind narrator for NagarCalc. Explain only the arithmetic just performed. Use plain language and one to five very short lines, at most 45 words total. Be silly without insulting the user. Do not invent context or provide financial, medical, or legal advice. Return plain text only." }],
+    const startedAt = Date.now();
+    let rawText = "";
+    let upstreamStatus;
+    for (const [index, model] of MODELS.entries()) {
+      const remainingMs = 12_000 - (Date.now() - startedAt);
+      if (remainingMs <= 0) throw new Error("TimeoutError");
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
         },
-        contents: [{ parts: [{ text: `Expression: ${expression}\nCorrect answer: ${answer}\nGive a tiny, funny explanation of this calculation.` }] }],
-        generationConfig: {
-          thinkingConfig: { thinkingLevel: "low" },
-          maxOutputTokens: 256,
-        },
-      }),
-      signal: AbortSignal.timeout(12_000),
-    });
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: "You are the playful, kind narrator for NagarCalc. Explain only the arithmetic just performed. Use plain language and one to five very short lines, at most 30 words total. Be silly without insulting the user. Do not invent context or provide financial, medical, or legal advice. Return plain text only." }],
+          },
+          contents: [{ parts: [{ text: `Expression: ${expression}\nCorrect answer: ${answer}\nGive a tiny, funny explanation of this calculation.` }] }],
+          generationConfig: {
+            thinkingConfig: { thinkingLevel: "low" },
+            maxOutputTokens: 256,
+          },
+        }),
+        signal: AbortSignal.timeout(remainingMs),
+      });
 
-    if (!response.ok) {
-      console.error("Gemini API returned HTTP", response.status);
-      return res.status(502).json({ error: "The AI overview service had a wobble.", upstreamStatus: response.status });
+      if (!response.ok) {
+        upstreamStatus = response.status;
+        console.error("Gemini API returned HTTP", response.status);
+        if (response.status === 503 && index < MODELS.length - 1) continue;
+        return res.status(502).json({ error: "The AI overview service had a wobble.", upstreamStatus });
+      }
+      const payload = await response.json();
+      rawText = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+      if (rawText) break;
+      console.error("Gemini API response had no text for model", model);
     }
-    const payload = await response.json();
-    const rawText = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim();
+
     if (!rawText) {
-      console.error("Gemini API response had no text.");
       return res.status(502).json({ error: "The AI overview came back empty." });
     }
 

@@ -87,3 +87,34 @@ test("turns upstream errors into a generic response without exposing credentials
     else process.env.GEMINI_API_KEY = savedKey;
   }
 });
+
+test("falls back to Gemini 3.6 when the faster model is temporarily unavailable", async () => {
+  const savedKey = process.env.GEMINI_API_KEY;
+  const savedFetch = globalThis.fetch;
+  const savedError = console.error;
+  process.env.GEMINI_API_KEY = "test-key";
+  console.error = () => {};
+  const urls = [];
+  globalThis.fetch = async (url) => {
+    urls.push(url);
+    if (urls.length === 1) return { ok: false, status: 503 };
+    return {
+      ok: true,
+      json: async () => ({ candidates: [{ content: { parts: [{ text: "Eight times seven is 56. Math wins today." }] } }] }),
+    };
+  };
+
+  try {
+    const res = mockResponse();
+    await handler({ method: "POST", headers: { "x-forwarded-for": `fallback-${Date.now()}` }, body: { expression: "8*7" } }, res);
+    assert.equal(res.statusCode, 200);
+    assert.match(urls[0], /gemini-3\.8-flash/);
+    assert.match(urls[1], /gemini-3\.6-flash/);
+    assert.equal(res.body.result, "56");
+  } finally {
+    globalThis.fetch = savedFetch;
+    console.error = savedError;
+    if (savedKey === undefined) delete process.env.GEMINI_API_KEY;
+    else process.env.GEMINI_API_KEY = savedKey;
+  }
+});
