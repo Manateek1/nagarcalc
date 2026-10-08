@@ -63,3 +63,24 @@ test("caps AI commentary at five lines and computes its own answer", async () =>
     else process.env.GEMINI_API_KEY = savedKey;
   }
 });
+
+test("turns upstream errors into a generic response without exposing credentials", async () => {
+  const savedKey = process.env.GEMINI_API_KEY;
+  const savedFetch = globalThis.fetch;
+  const savedError = console.error;
+  process.env.GEMINI_API_KEY = "test-key";
+  console.error = () => {};
+  globalThis.fetch = async () => ({ ok: false, status: 400 });
+
+  try {
+    const res = mockResponse();
+    await handler({ method: "POST", headers: { "x-forwarded-for": `error-${Date.now()}` }, body: { expression: "4*9" } }, res);
+    assert.equal(res.statusCode, 502);
+    assert.equal(JSON.stringify(res.body).includes("test-key"), false);
+  } finally {
+    globalThis.fetch = savedFetch;
+    console.error = savedError;
+    if (savedKey === undefined) delete process.env.GEMINI_API_KEY;
+    else process.env.GEMINI_API_KEY = savedKey;
+  }
+});

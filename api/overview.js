@@ -57,15 +57,22 @@ export default async function handler(req, res) {
       signal: AbortSignal.timeout(12_000),
     });
 
-    if (!response.ok) return res.status(502).json({ error: "The AI overview service had a wobble." });
+    if (!response.ok) {
+      console.error("Gemini API returned HTTP", response.status);
+      return res.status(502).json({ error: "The AI overview service had a wobble." });
+    }
     const payload = await response.json();
     const rawText = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim();
-    if (!rawText) return res.status(502).json({ error: "The AI overview came back empty." });
+    if (!rawText) {
+      console.error("Gemini API response had no text.");
+      return res.status(502).json({ error: "The AI overview came back empty." });
+    }
 
     const lines = rawText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(0, 5);
     const overview = lines.join("\n").slice(0, 600);
     return res.status(200).json({ overview, result: answer });
-  } catch {
+  } catch (error) {
+    console.error("Gemini overview request failed:", error instanceof Error ? error.name : "UnknownError");
     return res.status(502).json({ error: "The AI overview service is taking a tiny nap." });
   }
 }
