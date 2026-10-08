@@ -50,8 +50,8 @@ export default async function handler(req, res) {
         },
         contents: [{ parts: [{ text: `Expression: ${expression}\nCorrect answer: ${answer}\nGive a tiny, funny explanation of this calculation.` }] }],
         generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 110,
+          thinkingConfig: { thinkingLevel: "low" },
+          maxOutputTokens: 256,
         },
       }),
       signal: AbortSignal.timeout(12_000),

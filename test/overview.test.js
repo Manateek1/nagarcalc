@@ -57,6 +57,8 @@ test("caps AI commentary at five lines and computes its own answer", async () =>
     assert.equal(res.body.overview.split("\n").length, 5);
     assert.match(sentBody.contents[0].parts[0].text, /Correct answer: 42/);
     assert.equal(sentBody.contents[0].parts[0].text.includes("999"), false);
+    assert.equal(sentBody.generationConfig.thinkingConfig.thinkingLevel, "low");
+    assert.equal("temperature" in sentBody.generationConfig, false);
   } finally {
     globalThis.fetch = savedFetch;
     if (savedKey === undefined) delete process.env.GEMINI_API_KEY;
